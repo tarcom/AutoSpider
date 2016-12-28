@@ -1,0 +1,9 @@
+kml is calculated wrong
+
+add 1+2+3. års pristab, rep and all that other stuff...
+
+add info about if private or forhandler
+
+add to db, if price was updated...
+
+get it into the cloud inkl autodeploy from jenkins/github
