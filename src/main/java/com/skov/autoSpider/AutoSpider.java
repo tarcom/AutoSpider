@@ -35,7 +35,6 @@ public class AutoSpider {
 
                 try {
 
-
                     String baseHeadline = divSpecificAutoOnListPage.getElementsByClass("listing-heading").get(0).text().trim();
                     int price = extractInt(divSpecificAutoOnListPage.getElementsByClass("col-xs-3").get(1).text());
                     int year = extractInt(divSpecificAutoOnListPage.getElementsByClass("col-xs-2").get(3).text());
