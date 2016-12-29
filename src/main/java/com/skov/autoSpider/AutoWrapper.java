@@ -9,8 +9,8 @@ import java.util.Date;
  */
 public class AutoWrapper {
 
-    private String urlBase;
     private String urlDetail;
+    private String urlBase;
 
     private String headline1;
     private String headline2;
@@ -49,7 +49,7 @@ public class AutoWrapper {
         this.baseHeadline = baseHeadline;
 
         if (indregYear != year) {
-            System.out.println("warning: indregYear is different from year! indregYear=" + indregYear + ", year=" + year + " - " + urlDetail);
+            //System.out.println("warning: indregYear is different from year! indregYear=" + indregYear + ", year=" + year + " - " + urlDetail);
             indregYear = year;
             indregMonth = 6; //average I guess...
         }
@@ -59,22 +59,48 @@ public class AutoWrapper {
 
     }
 
+    @Override
+    public String toString() {
+        return "AutoWrapper{" +
+                "headline1='" + headline1 + '\'' +
+                ", headline2='" + headline2 + '\'' +
+                ", price=" + price +
+                ", year=" + year +
+                ", km=" + km +
+                ", urlDetail='" + urlDetail + '\'' +
+                ", kml=" + kml +
+                ", newPrice=" + newPrice +
+                ", distance=" + distance +
+                ", town='" + town + '\'' +
+                ", greenEA=" + greenEA +
+                ", hk=" + hk +
+                ", acc100=" + acc100 +
+                ", thumbImg='" + thumbImg + '\'' +
+                ", text='" + text + '\'' +
+                ", baseHeadline='" + baseHeadline + '\'' +
+                ", urlBase='" + urlBase + '\'' +
+                ", indregDate=" + indregDate +
+                '}';
+    }
+
     public void printAuto() {
-        System.out.println("headline1: " + headline1);
-        System.out.println("headline2: " + headline2);
-        System.out.println("price    : " + price);
-        System.out.println("year     : " + year);
-        System.out.println("km       : " + km);
-        System.out.println("km/l     : " + kml);
-        System.out.println("distance : " + distance);
-        System.out.println("town     : " + town);
-        System.out.println("grøn e.a.: " + greenEA);
-        System.out.println("hk       : " + hk);
-        System.out.println("0-100    : " + acc100);
-        System.out.println("text     : " + text);
-        System.out.println("thumbImg : " + thumbImg);
-        System.out.println("url      : " + urlDetail);
-        System.out.println("newPrice : " + newPrice);
+        System.out.println("Printing auto:");
+        System.out.println("headline1 : " + headline1);
+        System.out.println("headline2 : " + headline2);
+        System.out.println("price     : " + price);
+        System.out.println("year      : " + year);
+        System.out.println("km        : " + km);
+        System.out.println("km/l      : " + kml);
+        System.out.println("distance  : " + distance);
+        System.out.println("town      : " + town);
+        System.out.println("grøn e.a. : " + greenEA);
+        System.out.println("hk        : " + hk);
+        System.out.println("0-100     : " + acc100);
+        System.out.println("text      : " + text);
+        System.out.println("thumbImg  : " + thumbImg);
+        System.out.println("url       : " + urlDetail);
+        System.out.println("newPrice  : " + newPrice);
+        System.out.println("indregDate: " + indregDate);
     }
 
     public String getUrlBase() {

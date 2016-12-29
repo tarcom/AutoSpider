@@ -5,6 +5,7 @@ package com.skov.autoSpider;
  */
 
 import java.io.IOException;
+import java.util.TreeMap;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -15,54 +16,75 @@ import org.jsoup.select.Elements;
 public class AutoSpider {
 
     public static void main(String[] args) throws Exception {
+        doFetchAutos(false);
+    }
+
+    public static void doFetchAutos(boolean doItQuicklyNDirty) throws Exception {
 
         int i = 0;
-        String uri = "http://www.bilbasen.dk/brugt/bil?YearFrom=2012&YearTo=2016&PriceFrom=25000&PriceTo=50000&MileageFrom=10000&MileageTo=75000&ZipCode=9310&IncludeEngrosCVR=False&IncludeSellForCustomer=True&IncludeWithoutVehicleRegistrationTax=False&IncludeLeasing=False&HpFrom=&HpTo=";
 
-        Connection connect = Jsoup.connect(uri).data("PageSize", "96").userAgent("Mozilla");
-        Document doc = connect.get();
+        //String uri = "http://www.bilbasen.dk/brugt/bil?YearFrom=2012&YearTo=2016&PriceFrom=25000&PriceTo=50000&MileageFrom=10000&MileageTo=75000&ZipCode=9310&IncludeEngrosCVR=False&IncludeSellForCustomer=True&IncludeWithoutVehicleRegistrationTax=False&IncludeLeasing=False&HpFrom=&HpTo=";
+        String uri = "http://www.bilbasen.dk/brugt/bil?YearFrom=2008&YearTo=2016&PriceFrom=25000&PriceTo=50000&MileageFrom=10000&MileageTo=125000&ZipCode=9310&IncludeEngrosCVR=False&IncludeSellForCustomer=True&IncludeWithoutVehicleRegistrationTax=False&IncludeLeasing=False&HpFrom=&HpTo=&SortBy=price&SortOrder=asc";
+        Connection connect = Jsoup.connect(uri).userAgent("Mozilla");
+        connect.cookie("PageSize", "9999");
+        Document docAutoListPage = connect.get();
 
-        Elements divs = doc.select("div");
-        for (Element div : divs) {
-            if (div.attr("class").equals("row listing listing-discount bb-listing-clickable")) {
+        Elements divsOnAutoListPage = docAutoListPage.select("div");
+        for (Element divSpecificAutoOnListPage : divsOnAutoListPage) {
+            if (divSpecificAutoOnListPage.attr("class").equals("row listing listing-discount bb-listing-clickable")) {
 
                 try {
 
-                    String urlDetail = "http://www.bilbasen.dk" + div.getElementsByClass("listing-heading").get(0).attr("href");
-                    Document docDetail = Jsoup.connect(urlDetail).get();
 
-                    String headline1 = docDetail.select("H1").select("span").text().trim();
-                    String headline2 = docDetail.select("H1").text().replaceAll(headline1, "").trim();
-                    String baseHeadline = div.getElementsByClass("listing-heading").get(0).text().trim();
-                    int price = extractInt(div.getElementsByClass("col-xs-3").get(1).text());
-                    int year = extractInt(div.getElementsByClass("col-xs-2").get(3).text());
-                    int indregYear = extractInt(docDetail.getElementById("bbVipDescriptionFacts").select("li").get(0).text().replaceAll("Indreg.", "").trim().split("/")[1]);
-                    int indregMonth = extractInt(docDetail.getElementById("bbVipDescriptionFacts").select("li").get(0).text().replaceAll("Indreg.", "").trim().split("/")[0]);
-                    int km = extractInt(div.getElementsByClass("col-xs-2").get(2).text());
-                    int kml = extractInt(div.getElementsByClass("variableDataColumn").text());
-                    int nypris = extractInt(docDetail.getElementsByClass("odd").get(0).text());
-                    int greenEA = extractInt(div.getElementsByAttribute("data-moth").attr("data-moth"));
-                    int distance = extractInt(div.getElementsByClass("col-xs-2").get(1).text());
-                    int hk = extractInt(div.getElementsByAttribute("data-hk").attr("data-hk"));
-                    int acc100 = extractInt(div.getElementsByAttribute("data-kmt").attr("data-kmt"));
-                    String text = div.text().trim();
-                    String town = div.getElementsByClass("col-xs-2").get(4).text().trim();
-                    String thumbImg = div.getElementsByAttribute("data-echo").attr("data-echo");
+                    String baseHeadline = divSpecificAutoOnListPage.getElementsByClass("listing-heading").get(0).text().trim();
+                    int price = extractInt(divSpecificAutoOnListPage.getElementsByClass("col-xs-3").get(1).text());
+                    int year = extractInt(divSpecificAutoOnListPage.getElementsByClass("col-xs-2").get(3).text());
+                    int km = extractInt(divSpecificAutoOnListPage.getElementsByClass("col-xs-2").get(2).text());
+                    int kml = extractInt(divSpecificAutoOnListPage.getElementsByClass("variableDataColumn").text());
+                    int greenEA = extractInt(divSpecificAutoOnListPage.getElementsByAttribute("data-moth").attr("data-moth"));
+                    int distance = extractInt(divSpecificAutoOnListPage.getElementsByClass("col-xs-2").get(1).text());
+                    int hk = extractInt(divSpecificAutoOnListPage.getElementsByAttribute("data-hk").attr("data-hk"));
+                    int acc100 = extractInt(divSpecificAutoOnListPage.getElementsByAttribute("data-kmt").attr("data-kmt"));
+                    String text = divSpecificAutoOnListPage.text().trim();
+                    String town = divSpecificAutoOnListPage.getElementsByClass("col-xs-2").get(4).text().trim();
+                    String thumbImg = divSpecificAutoOnListPage.getElementsByAttribute("data-echo").attr("data-echo");
+
+                    String urlDetail = "http://www.bilbasen.dk" + divSpecificAutoOnListPage.getElementsByClass("listing-heading").get(0).attr("href");
+
+                    //quickly:
+                    String headline1 = baseHeadline;
+                    String headline2 = "";
+                    int indregYear = -1;
+                    int indregMonth = -1;
+                    int nypris = -1;
+
+                    if (!doItQuicklyNDirty) {
+                        Document docAutoDetailPage = Jsoup.connect(urlDetail).get();
+
+                        headline1 = docAutoDetailPage.select("H1").select("span").text().trim();
+                        headline2 = docAutoDetailPage.select("H1").text().replaceAll(headline1, "").trim();
+                        indregYear = extractInt(docAutoDetailPage.getElementById("bbVipDescriptionFacts").select("li").get(0).text().replaceAll("Indreg.", "").trim().split("/")[1]);
+                        indregMonth = extractInt(docAutoDetailPage.getElementById("bbVipDescriptionFacts").select("li").get(0).text().replaceAll("Indreg.", "").trim().split("/")[0]);
+                        nypris = extractInt(docAutoDetailPage.getElementsByClass("odd").get(0).text());
+                    }
+
 
                     AutoWrapper auto = new AutoWrapper(uri, urlDetail, headline1, headline2, price, year, km, kml, nypris, distance, town, greenEA, hk, acc100, thumbImg, text, baseHeadline, indregYear, indregMonth);
 
-                    System.out.println(Util.getAge(auto) + " - " + auto.getBaseHeadline());
+                    //System.out.println(Util.getAge(auto) + " - " + auto.getBaseHeadline());
                     i++;
-                    auto.printAuto();
-                    Util.doPrintCalculationDetails(auto);
-                    break;
+                    System.out.print(".");
+                    //auto.printAuto();
+                    DBHandler.insert(auto);
+                    //Util.doPrintCalculationDetails(auto);
+                    //break;
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-
+        System.out.println();
         System.out.println("fetched " + i + " cars.");
 
     }

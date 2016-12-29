@@ -7,3 +7,5 @@ add info about if private or forhandler
 add to db, if price was updated...
 
 get it into the cloud inkl autodeploy from jenkins/github
+
+separate fetch process and score-calculation process
